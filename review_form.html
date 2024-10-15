@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Film Review</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .review-box {
+            margin-bottom: 10px;
+        }
+        .status {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Write your review on the film</h2>
+
+<form id="reviewForm" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit Review">
+</form>
+
+<div class="status" id="reviewStatus"></div>
+
+<script>
+    document.getElementById("reviewForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Отключаем стандартное поведение формы
+
+        const reviewText = document.getElementsByName("review")[0].value;
+
+        // Отправляем запрос через fetch API
+        fetch("", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ review: reviewText })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("reviewStatus").innerText = 
+                "Review Status: " + data.status + " (Predicted Rating: " + data.rating.toFixed(2) + "/10)";
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    });
+</script>
+
+</body>
+</html>
